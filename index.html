@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Residencial Jardim Nazaré</title>
+    <style>
+        body {
+            font-family: Tahoma, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.75);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .button {
+            background-color: green;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background-color: darkgreen;
+        }
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Residencial Jardim Nazaré</h1>
+        <div class="grid" id="buttonContainer"></div>
+    </div>
+    <script>
+        const buttonContainer = document.getElementById("buttonContainer");
+        
+        for (let i = 1; i <= 88; i++) {
+            let houseNumber = i.toString().padStart(2, "0");
+            let phone = i === 27 ? "+5511947543037" : `+55119${(10000000 + i).toString().slice(-8)}`;
+            
+            let button = document.createElement("button");
+            button.textContent = `Casa ${houseNumber}`;
+            button.className = "button";
+            button.onclick = () => {
+                window.location.href = `https://wa.me/${phone}?text=Entrega%20para%20a%20casa%20${houseNumber}`;
+            };
+            
+            buttonContainer.appendChild(button);
+        }
+    </script>
+</body>
+</html>
