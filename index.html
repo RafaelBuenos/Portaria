@@ -13,68 +13,86 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
+            background-color: #f0f0f0;
         }
         .container {
-            background: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.85);
             padding: 20px;
             border-radius: 10px;
             text-align: center;
-            max-width: 600px;
             width: 90%;
+            max-width: 400px;
         }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 20px;
+        input {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+            margin-bottom: 10px;
         }
         .button {
             background-color: blue;
-            color: white; font-weight: bold;
+            color: white;
+            font-weight: bold;
             padding: 10px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            width: 100%;
         }
         .button:hover {
             background-color: darkblue;
         }
-        @media (max-width: 600px) {
-            .grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Residencial Jardim Nazaré</h1>
-        <div class="grid" id="buttonContainer"></div>
+    <div class="container" id="mainContainer">
+        <h1>Digite o número da casa</h1>
+        <input type="number" id="houseInput" placeholder="Ex: 21" min="1" max="88" />
+        <button class="button" onclick="handleSubmit()">Enviar</button>
     </div>
+
     <script>
-        const buttonContainer = document.getElementById("buttonContainer");
-        
         const customPhones = {
             "19": "+5511952042591",
             "21": "+5511932506701",
             "27": "+5511999621261",
             "30": "+5511987217160",
             "52": "+5511963473502",
-	    "53": "+5511947543037"
+            "53": "+5511947543037"
         };
 
-        for (let i = 1; i <= 88; i++) {
-            let houseNumber = i.toString().padStart(2, "0");
-            let phone = customPhones[houseNumber] || `+55119${(10000000 + i).toString().slice(-8)}`;
-            
-            let button = document.createElement("button");
-            button.textContent = `Casa ${houseNumber}`;
-            button.className = "button";
-            button.onclick = () => {
-                window.location.href = `https://wa.me/${phone}?text=Entrega%20para%20a%20casa%20${houseNumber}`;
-            };
-            
-            buttonContainer.appendChild(button);
+        // Verifica se o acesso já foi encerrado
+        if (localStorage.getItem("acessoEncerrado")) {
+            bloquearAcesso();
+        }
+
+        function handleSubmit() {
+            const input = document.getElementById("houseInput");
+            let houseNumber = parseInt(input.value, 10);
+
+            if (isNaN(houseNumber) || houseNumber < 1 || houseNumber > 88) {
+                alert("Por favor, digite um número de casa válido entre 1 e 88.");
+                return;
+            }
+
+            let formattedNumber = houseNumber.toString().padStart(2, "0");
+            let phone = customPhones[formattedNumber] || `+55119${(10000000 + houseNumber).toString().slice(-8)}`;
+            let url = `https://wa.me/${phone}?text=Entrega%20para%20a%20casa%20${formattedNumber}`;
+
+            // Salva o bloqueio no navegador
+            localStorage.setItem("acessoEncerrado", "true");
+
+            // Bloqueia o acesso e redireciona
+            bloquearAcesso();
+
+            setTimeout(() => {
+                window.location.href = url;
+            }, 1000); // Redireciona em 1 segundo
+        }
+
+        function bloquearAcesso() {
+            document.body.innerHTML = "<h2 style='text-align:center;font-family:Tahoma;'>Acesso encerrado.</h2>";
         }
     </script>
 </body>
