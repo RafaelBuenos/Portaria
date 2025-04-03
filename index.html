@@ -13,15 +13,21 @@
             justify-content: center;
             min-height: 100vh;
             margin: 0;
-            background-color: #f0f0f0;
+            background: url('https://source.unsplash.com/1600x900/?gated-community,houses') no-repeat center center/cover;
+            color: white;
+            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
         }
         .container {
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(0, 0, 0, 0.75);
             padding: 20px;
             border-radius: 10px;
             text-align: center;
             width: 90%;
             max-width: 400px;
+        }
+        h1 {
+            margin-bottom: 20px;
+            font-size: 24px;
         }
         input {
             padding: 10px;
@@ -46,8 +52,9 @@
     </style>
 </head>
 <body>
+    <h1>Residencial Jardim Nazaré</h1>
     <div class="container" id="mainContainer">
-        <h1>Digite o número da casa</h1>
+        <h2>Digite o número da casa</h2>
         <input type="number" id="houseInput" placeholder="Ex: 21" min="1" max="88" />
         <button class="button" onclick="handleSubmit()">Enviar</button>
     </div>
@@ -62,7 +69,6 @@
             "53": "+5511947543037"
         };
 
-        // Verifica se o acesso já foi encerrado
         if (localStorage.getItem("acessoEncerrado")) {
             bloquearAcesso();
         }
@@ -80,15 +86,12 @@
             let phone = customPhones[formattedNumber] || `+55119${(10000000 + houseNumber).toString().slice(-8)}`;
             let url = `https://wa.me/${phone}?text=Entrega%20para%20a%20casa%20${formattedNumber}`;
 
-            // Salva o bloqueio no navegador
             localStorage.setItem("acessoEncerrado", "true");
-
-            // Bloqueia o acesso e redireciona
             bloquearAcesso();
 
             setTimeout(() => {
                 window.location.href = url;
-            }, 1000); // Redireciona em 1 segundo
+            }, 1000);
         }
 
         function bloquearAcesso() {
