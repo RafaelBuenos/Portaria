@@ -97,6 +97,24 @@
       }
     }
 
+    function registrarAcesso() {
+      localStorage.setItem("acessoEncerrado", new Date().toISOString());
+    }
+
+    function verificarAcesso() {
+      const dataUltimoAcesso = localStorage.getItem("acessoEncerrado");
+      if (dataUltimoAcesso) {
+        const agora = new Date();
+        const expiracao = new Date(dataUltimoAcesso);
+        expiracao.setMinutes(expiracao.getMinutes() + 1);
+        if (agora < expiracao) {
+          bloquearAcesso();
+        } else {
+          localStorage.removeItem("acessoEncerrado");
+        }
+      }
+    }
+
     function bloquearAcesso() {
       document.body.innerHTML = `
         <div class="h-screen w-screen bg-black flex items-center justify-center">
