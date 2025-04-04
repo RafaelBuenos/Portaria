@@ -18,7 +18,7 @@
       text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
     }
 
-    .container {
+    main {
       background: rgba(0, 0, 0, 0.75);
       padding: 20px;
       border-radius: 10px;
@@ -29,7 +29,6 @@
 
     h1 {
       font-size: 42px;
-      text-align: center;
       font-weight: bold;
       text-transform: uppercase;
       letter-spacing: 3px;
@@ -45,10 +44,9 @@
       font-size: 24px;
       background: black;
       color: #00ffff;
-      text-align: center;
       padding: 10px;
       border-radius: 5px;
-      margin-bottom: 10px;
+      margin: 15px 0;
     }
 
     .grid {
@@ -66,6 +64,7 @@
       border-radius: 5px;
       cursor: pointer;
       font-size: 20px;
+      transition: background-color 0.3s;
     }
 
     .button:hover {
@@ -75,36 +74,37 @@
     .wide {
       grid-column: span 2;
     }
+
+    .hidden {
+      display: none;
+    }
   </style>
 </head>
 <body>
   <h1>Residencial Jardim Nazaré</h1>
-  <div class="container">
-    <h2>Digite o número da casa</h2>
-    <div id="display">_</div>
-    <div class="grid">
-      <button class="button" onclick="addNumber(1)">1</button>
-      <button class="button" onclick="addNumber(2)">2</button>
-      <button class="button" onclick="addNumber(3)">3</button>
-      <button class="button" onclick="addNumber(4)">4</button>
-      <button class="button" onclick="addNumber(5)">5</button>
-      <button class="button" onclick="addNumber(6)">6</button>
-      <button class="button" onclick="addNumber(7)">7</button>
-      <button class="button" onclick="addNumber(8)">8</button>
-      <button class="button" onclick="addNumber(9)">9</button>
+  <main id="main-content">
+    <section>
+      <h2>Digite o número da casa</h2>
+      <div id="display">_</div>
+    </section>
+    <section class="grid" aria-label="Teclado numérico">
+      ${[1,2,3,4,5,6,7,8,9].map(num => `<button class="button" onclick="addNumber(${num})">${num}</button>`).join('')}
       <button class="button wide" onclick="addNumber(0)">0</button>
       <button class="button" onclick="deleteNumber()">←</button>
       <button class="button" onclick="handleSubmit()">✔</button>
-    </div>
-  </div>
+    </section>
+  </main>
 
   <script>
     let numeroDigitado = "";
-    
+
+    const display = document.getElementById("display");
+    const mainContent = document.getElementById("main-content");
+
     if (localStorage.getItem("acessoEncerrado")) {
-            bloquearAcesso();
+      bloquearAcesso();
     }
-    
+
     function addNumber(num) {
       if (numeroDigitado.length < 2) {
         numeroDigitado += num.toString();
@@ -118,40 +118,36 @@
     }
 
     function atualizarDisplay() {
-      document.getElementById("display").textContent = numeroDigitado || "_";
+      display.textContent = numeroDigitado || "_";
     }
 
-    function handleSubmit() {
-      if (numeroDigitado.length === 0) {
-        alert("Digite um número.");
+    async function handleSubmit() {
+      if (!numeroDigitado) {
+        alert("Digite o número da casa.");
         return;
       }
-      buscarTelefone(numeroDigitado);
-    }
 
-    async function buscarTelefone(numero) {
-      let numeroFormatado = numero.toString().padStart(2, "0");
+      const numeroFormatado = numeroDigitado.padStart(2, "0");
 
       try {
         const response = await fetch(`/api/getPhone?houseNumber=${numeroFormatado}`);
-        const data = await response.json();
-        const url = `https://wa.me/${data.phone}?text=Entrega%20para%20a%20casa%20${numeroFormatado}`;
-        window.location.href = url;
-      } catch (error) {
-        alert("Erro ao buscar número. Tente novamente.");
-      }
-      
-      localStorage.setItem("acessoEncerrado", "true");
-      bloquearAcesso();
+        if (!response.ok) throw new Error("Resposta inválida da API");
 
-      setTimeout(() => {
-          window.location.href = url;
-            }, 1000);
+        const { phone } = await response.json();
+        const url = `https://wa.me/${phone}?text=Entrega%20para%20a%20casa%20${numeroFormatado}`;
+        
+        localStorage.setItem("acessoEncerrado", "true");
+        bloquearAcesso();
+        
+        setTimeout(() => window.location.href = url, 1000);
+      } catch (error) {
+        console.error(error);
+        alert("Erro ao buscar telefone. Verifique o número ou tente novamente mais tarde.");
+      }
     }
-    
-      function bloquearAcesso() {
-            document.body.innerHTML = "<h2 style='text-align:center;font-family:Tahoma;'>Acesso encerrado.</h2>";
-        }
+
+    function bloquearAcesso() {
+      mainContent.innerHTML = "<h2 style='text-align:center'>Acesso encerrado.</h2>";
     }
   </script>
 </body>
