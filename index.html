@@ -91,59 +91,18 @@
     </div>
 
     <script>
-        let inputNumber = "";
+        async function buscarTelefone(numero) {
+        let numeroFormatado = numero.toString().padStart(2, "0");
 
-        const customPhones = {
-            "19": "+5511952042591",
-            "21": "+5511932506701",
-            "27": "+5511999621261",
-            "30": "+5511987217160",
-            "52": "+5511963473502",
-            "53": "+5511947543037"
-        };
-
-        if (localStorage.getItem("acessoEncerrado")) {
-            bloquearAcesso();
+        try {
+            const response = await fetch(`/api/getPhone?houseNumber=${numeroFormatado}`);
+            const data = await response.json();
+            const url = `https://wa.me/${data.phone}?text=Entrega%20para%20a%20casa%20${numeroFormatado}`;
+            window.location.href = url;
+        } catch (error) {
+            alert("Erro ao buscar número. Tente novamente.");
         }
-
-        function addNumber(num) {
-            if (inputNumber.length < 2) {
-                inputNumber += num;
-                updateDisplay();
-            }
-        }
-
-        function deleteNumber() {
-            inputNumber = inputNumber.slice(0, -1);
-            updateDisplay();
-        }
-
-        function updateDisplay() {
-            document.getElementById("display").textContent = inputNumber || "_";
-        }
-
-        function handleSubmit() {
-            let houseNumber = parseInt(inputNumber, 10);
-            if (isNaN(houseNumber) || houseNumber < 1 || houseNumber > 88) {
-                alert("Número inválido! Digite um número entre 1 e 88.");
-                return;
-            }
-
-            let formattedNumber = houseNumber.toString().padStart(2, "0");
-            let phone = customPhones[formattedNumber] || `+55119${(10000000 + houseNumber).toString().slice(-8)}`;
-            let url = `https://wa.me/${phone}?text=Entrega%20para%20a%20casa%20${formattedNumber}`;
-
-            localStorage.setItem("acessoEncerrado", "true");
-            bloquearAcesso();
-
-            setTimeout(() => {
-                window.location.href = url;
-            }, 1000);
-        }
-
-        function bloquearAcesso() {
-            document.body.innerHTML = "<h2 style='text-align:center;font-family:Tahoma;'>Acesso encerrado.</h2>";
-        }
+    }
     </script>
 </body>
 </html>
