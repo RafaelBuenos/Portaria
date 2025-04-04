@@ -80,3 +80,63 @@
 <body>
   <h1>Residencial Jardim Nazaré</h1>
   <div class="container">
+    <h2>Digite o número da casa</h2>
+    <div id="display">_</div>
+    <div class="grid">
+      <button class="button" onclick="addNumber(1)">1</button>
+      <button class="button" onclick="addNumber(2)">2</button>
+      <button class="button" onclick="addNumber(3)">3</button>
+      <button class="button" onclick="addNumber(4)">4</button>
+      <button class="button" onclick="addNumber(5)">5</button>
+      <button class="button" onclick="addNumber(6)">6</button>
+      <button class="button" onclick="addNumber(7)">7</button>
+      <button class="button" onclick="addNumber(8)">8</button>
+      <button class="button" onclick="addNumber(9)">9</button>
+      <button class="button wide" onclick="addNumber(0)">0</button>
+      <button class="button" onclick="deleteNumber()">←</button>
+      <button class="button" onclick="handleSubmit()">✔</button>
+    </div>
+  </div>
+
+  <script>
+    let numeroDigitado = "";
+
+    function addNumber(num) {
+      if (numeroDigitado.length < 2) {
+        numeroDigitado += num.toString();
+        atualizarDisplay();
+      }
+    }
+
+    function deleteNumber() {
+      numeroDigitado = numeroDigitado.slice(0, -1);
+      atualizarDisplay();
+    }
+
+    function atualizarDisplay() {
+      document.getElementById("display").textContent = numeroDigitado || "_";
+    }
+
+    function handleSubmit() {
+      if (numeroDigitado.length === 0) {
+        alert("Digite um número.");
+        return;
+      }
+      buscarTelefone(numeroDigitado);
+    }
+
+    async function buscarTelefone(numero) {
+      let numeroFormatado = numero.toString().padStart(2, "0");
+
+      try {
+        const response = await fetch(`/api/getPhone?houseNumber=${numeroFormatado}`);
+        const data = await response.json();
+        const url = `https://wa.me/${data.phone}?text=Entrega%20para%20a%20casa%20${numeroFormatado}`;
+        window.location.href = url;
+      } catch (error) {
+        alert("Erro ao buscar número. Tente novamente.");
+      }
+    }
+  </script>
+</body>
+</html>
