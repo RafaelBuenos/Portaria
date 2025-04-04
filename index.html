@@ -100,7 +100,11 @@
 
   <script>
     let numeroDigitado = "";
-
+    
+    if (localStorage.getItem("acessoEncerrado")) {
+            bloquearAcesso();
+    }
+    
     function addNumber(num) {
       if (numeroDigitado.length < 2) {
         numeroDigitado += num.toString();
@@ -136,6 +140,17 @@
       } catch (error) {
         alert("Erro ao buscar número. Tente novamente.");
       }
+      
+      localStorage.setItem("acessoEncerrado", "true");
+      bloquearAcesso();
+
+      setTimeout(() => {
+          window.location.href = url;
+            }, 1000);
+
+      function bloquearAcesso() {
+            document.body.innerHTML = "<h2 style='text-align:center;font-family:Tahoma;'>Acesso encerrado.</h2>";
+        }
     }
   </script>
 </body>
