@@ -6,30 +6,41 @@
   <title>Residencial Jardim Nazaré</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center bg-cover bg-center text-white" style="background-image: url('https://tse4.mm.bing.net/th?id=OIP.8F0XjoldD4FVe3MXV2fB5gHaEo&pid=Api');">
+<body class="min-h-screen flex flex-col items-center justify-center bg-cover bg-center text-white px-4" style="background-image: url('https://tse4.mm.bing.net/th?id=OIP.8F0XjoldD4FVe3MXV2fB5gHaEo&pid=Api');">
 
-  <h1 class="text-4xl md:text-5xl font-bold uppercase bg-white/20 text-black/80 rounded-xl px-6 py-3 shadow-md mt-6">Residencial Jardim Nazaré</h1>
+  <h1 class="text-4xl font-bold uppercase tracking-widest text-center bg-white/20 text-black shadow-md py-3 px-6 rounded-xl mb-6">
+    Residencial Jardim Nazaré
+  </h1>
 
-  <main id="main-content" class="bg-black/70 p-6 rounded-xl w-11/12 max-w-md mt-6 text-center shadow-xl">
-    <h2 class="text-2xl mb-4">Digite o número da casa</h2>
-    <div id="display" class="text-cyan-300 text-2xl bg-black rounded-md py-3 mb-4">_</div>
+  <div id="app" class="bg-black/70 p-6 rounded-xl text-center w-full max-w-md space-y-4 shadow-lg">
+    <h2 class="text-xl font-semibold">Digite o número da casa</h2>
 
-    <div class="grid grid-cols-3 gap-4">
-      <!-- Botões numéricos -->
-      ${[1,2,3,4,5,6,7,8,9].map(num => `<button class="bg-blue-600 hover:bg-blue-800 text-white text-xl font-bold py-3 rounded" onclick="addNumber(${num})">${num}</button>`).join('')}
-      <button class="col-span-2 bg-blue-600 hover:bg-blue-800 text-white text-xl font-bold py-3 rounded" onclick="addNumber(0)">0</button>
-      <button class="bg-blue-600 hover:bg-blue-800 text-white text-xl font-bold py-3 rounded" onclick="deleteNumber()">←</button>
-      <button class="bg-green-600 hover:bg-green-800 text-white text-xl font-bold py-3 rounded" onclick="handleSubmit()">✔</button>
+    <div id="display" class="text-2xl font-mono bg-black text-cyan-400 p-3 rounded-md">
+      _
     </div>
-  </main>
+
+    <div class="grid grid-cols-3 gap-3">
+      <!-- Números de 1 a 9 -->
+      ${[1,2,3,4,5,6,7,8,9].map(n => `
+        <button class="bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(${n})">${n}</button>
+      `).join('')}
+      
+      <!-- Botão 0 -->
+      <button class="col-span-2 bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(0)">0</button>
+      
+      <!-- Apagar e Enviar -->
+      <button class="bg-red-600 hover:bg-red-800 text-white font-bold text-xl py-4 rounded-md" onclick="deleteNumber()">←</button>
+      <button class="bg-green-600 hover:bg-green-800 text-white font-bold text-xl py-4 rounded-md col-span-3" onclick="handleSubmit()">✔</button>
+    </div>
+  </div>
 
   <script>
     let numeroDigitado = "";
 
-    const display = document.getElementById("display");
-    const mainContent = document.getElementById("main-content");
-
-    if (localStorage.getItem("acessoEncerrado")) bloquearAcesso();
+    // Verifica se o acesso está encerrado
+    if (localStorage.getItem("acessoEncerrado")) {
+      bloquearAcesso();
+    }
 
     function addNumber(num) {
       if (numeroDigitado.length < 2) {
@@ -44,33 +55,48 @@
     }
 
     function atualizarDisplay() {
-      display.textContent = numeroDigitado || "_";
+      document.getElementById("display").textContent = numeroDigitado || "_";
     }
 
-    async function handleSubmit() {
+    function handleSubmit() {
       if (!numeroDigitado) {
-        alert("Digite o número da casa.");
+        alert("Digite um número.");
         return;
       }
+      buscarTelefone(numeroDigitado);
+    }
 
-      const numeroFormatado = numeroDigitado.padStart(2, "0");
+    async function buscarTelefone(numero) {
+      const numeroFormatado = numero.toString().padStart(2, "0");
 
       try {
         const response = await fetch(`/api/getPhone?houseNumber=${numeroFormatado}`);
-        const { phone } = await response.json();
-        const url = `https://wa.me/${phone}?text=Entrega%20para%20a%20casa%20${numeroFormatado}`;
+        const data = await response.json();
 
+        if (!data.phone) {
+          throw new Error("Número não encontrado");
+        }
+
+        const url = `https://wa.me/${data.phone}?text=Entrega%20para%20a%20casa%20${numeroFormatado}`;
         localStorage.setItem("acessoEncerrado", "true");
         bloquearAcesso();
 
-        setTimeout(() => window.location.href = url, 1000);
+        setTimeout(() => {
+          window.location.href = url;
+        }, 1000);
+
       } catch (error) {
-        alert("Erro ao buscar número. Verifique e tente novamente.");
+        alert("Erro ao buscar número. Tente novamente.");
+        console.error(error);
       }
     }
 
     function bloquearAcesso() {
-      mainContent.innerHTML = "<h2 class='text-2xl text-center'>Acesso encerrado.</h2>";
+      document.body.innerHTML = `
+        <div class="min-h-screen flex items-center justify-center bg-gray-900 text-white text-center px-6">
+          <h2 class="text-2xl font-semibold font-sans">Acesso encerrado.</h2>
+        </div>
+      `;
     }
   </script>
 </body>
