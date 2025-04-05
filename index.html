@@ -38,9 +38,7 @@
   <script>
     let numeroDigitado = "";
 
-    if (localStorage.getItem("acessoEncerrado")) {
-      bloquearAcesso();
-    }
+    verificarAcesso();
 
     function addNumber(num) {
       if (numeroDigitado.length < 2) {
@@ -59,7 +57,7 @@
     }
 
     function handleSubmit() {
-      if (!numeroDigitado) {
+      if (numeroDigitado.length === 0) {
         alert("Digite um número.");
         return;
       }
@@ -72,25 +70,38 @@
       try {
         const response = await fetch(`/api/getPhone?houseNumber=${numeroFormatado}`);
         const data = await response.json();
-
-        if (!data.phone) {
-          throw new Error("Número não encontrado");
-        }
-
         const url = `https://wa.me/${data.phone}?text=Entrega%20para%20a%20casa%20${numeroFormatado}`;
-        localStorage.setItem("acessoEncerrado", "true");
-        bloquearAcesso();
+
+        registrarAcesso(); // marca o tempo
+        bloquearAcesso();  // mostra tela de encerrado
 
         setTimeout(() => {
           window.location.href = url;
         }, 1000);
-
       } catch (error) {
-        alert("Erro ao buscar número. Tente novamente.");
-        console.error(error);
+        alert("Número não encontrado.");
       }
     }
 
+    function registrarAcesso() {
+      localStorage.setItem("acessoEncerrado", new Date().toISOString());
+    }
+
+    function verificarAcesso() {
+      const dataUltimoAcesso = localStorage.getItem("acessoEncerrado");
+      if (dataUltimoAcesso) {
+        const agora = new Date();
+        const expiracao = new Date(dataUltimoAcesso);
+        expiracao.setMinutes(expiracao.getMinutes() + 1); // BLOQUEIO DE 1 MINUTO
+
+        if (agora < expiracao) {
+          bloquearAcesso();
+        } else {
+          localStorage.removeItem("acessoEncerrado");
+        }
+      }
+    }
+    
     function bloquearAcesso() {
       document.body.innerHTML = `
         <div class="h-screen w-screen bg-black flex items-center justify-center">
