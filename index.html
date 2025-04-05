@@ -6,47 +6,39 @@
   <title>Residencial Jardim Nazaré</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center bg-cover bg-center text-white px-4" style="background-image: url('https://tse4.mm.bing.net/th?id=OIP.8F0XjoldD4FVe3MXV2fB5gHaEo&pid=Api');">
+<body class="bg-cover bg-center min-h-screen flex flex-col items-center justify-center text-white" style="background-image: url('https://tse4.mm.bing.net/th?id=OIP.8F0XjoldD4FVe3MXV2fB5gHaEo&pid=Api');">
 
-  <h1 class="text-4xl font-bold uppercase tracking-widest text-center bg-white/20 text-black shadow-md py-3 px-6 rounded-xl mb-6">
-    Residencial Jardim Nazaré
-  </h1>
-
-  <div id="app" class="bg-black/70 p-6 rounded-xl text-center w-full max-w-md space-y-4 shadow-lg">
-    <h2 class="text-xl font-semibold">Digite o número da casa</h2>
-
-    <div id="display" class="text-2xl font-mono bg-black text-cyan-400 p-3 rounded-md">
-      _
-    </div>
+  <div id="conteudoPrincipal" class="bg-black/70 p-6 rounded-xl max-w-md w-full text-center space-y-4">
+    <h1 class="text-3xl font-bold uppercase tracking-widest bg-white/20 text-black rounded-lg py-2">Residencial Jardim Nazaré</h1>
+    <h2 class="text-xl">Digite o número da casa</h2>
+    <div id="display" class="text-cyan-300 text-2xl bg-black rounded-md py-2">_</div>
 
     <div class="grid grid-cols-3 gap-3">
-      <!-- Números de 1 a 9 -->
-      <button class="bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(1)">1</button>
-      <button class="bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(2)">2</button>
-      <button class="bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(3)">3</button>
-      <button class="bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(4)">4</button>
-      <button class="bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(5)">5</button>
-      <button class="bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(6)">6</button>
-      <button class="bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(7)">7</button>
-      <button class="bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(8)">8</button>
-      <button class="bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(9)">9</button>
-      
-      <!-- Botão 0 -->
-      <button class="col-span-2 bg-blue-600 hover:bg-blue-800 text-white font-bold text-xl py-4 rounded-md" onclick="addNumber(0)">0</button>
-      
-      <!-- Apagar e Enviar -->
-      <button class="bg-red-600 hover:bg-red-800 text-white font-bold text-xl py-4 rounded-md" onclick="deleteNumber()">←</button>
-      <button class="bg-green-600 hover:bg-green-800 text-white font-bold text-xl py-4 rounded-md col-span-3" onclick="handleSubmit()">✔</button>
+      <button class="btn" onclick="addNumber(1)">1</button>
+      <button class="btn" onclick="addNumber(2)">2</button>
+      <button class="btn" onclick="addNumber(3)">3</button>
+      <button class="btn" onclick="addNumber(4)">4</button>
+      <button class="btn" onclick="addNumber(5)">5</button>
+      <button class="btn" onclick="addNumber(6)">6</button>
+      <button class="btn" onclick="addNumber(7)">7</button>
+      <button class="btn" onclick="addNumber(8)">8</button>
+      <button class="btn" onclick="addNumber(9)">9</button>
+      <button class="btn col-span-2" onclick="addNumber(0)">0</button>
+      <button class="btn" onclick="deleteNumber()">←</button>
+      <button class="btn" onclick="handleSubmit()">✔</button>
     </div>
   </div>
+
+  <style>
+    .btn {
+      @apply bg-blue-600 hover:bg-blue-800 text-white font-bold py-3 rounded-lg text-xl;
+    }
+  </style>
 
   <script>
     let numeroDigitado = "";
 
-    // Verifica se o acesso está encerrado
-    if (localStorage.getItem("acessoEncerrado")) {
-      bloquearAcesso();
-    }
+    verificarAcesso();
 
     function addNumber(num) {
       if (numeroDigitado.length < 2) {
@@ -65,7 +57,7 @@
     }
 
     function handleSubmit() {
-      if (!numeroDigitado) {
+      if (numeroDigitado.length === 0) {
         alert("Digite um número.");
         return;
       }
@@ -78,22 +70,16 @@
       try {
         const response = await fetch(`/api/getPhone?houseNumber=${numeroFormatado}`);
         const data = await response.json();
-
-        if (!data.phone) {
-          throw new Error("Número não encontrado");
-        }
-
         const url = `https://wa.me/${data.phone}?text=Entrega%20para%20a%20casa%20${numeroFormatado}`;
-        localStorage.setItem("acessoEncerrado", "true");
-        bloquearAcesso();
+
+        registrarAcesso(); // marca o tempo
+        bloquearAcesso();  // mostra tela de encerrado
 
         setTimeout(() => {
           window.location.href = url;
         }, 1000);
-
       } catch (error) {
         alert("Erro ao buscar número. Tente novamente.");
-        console.error(error);
       }
     }
 
@@ -106,7 +92,8 @@
       if (dataUltimoAcesso) {
         const agora = new Date();
         const expiracao = new Date(dataUltimoAcesso);
-        expiracao.setMinutes(expiracao.getMinutes() + 1);
+        expiracao.setMinutes(expiracao.getMinutes() + 1); // BLOQUEIO DE 1 MINUTO
+
         if (agora < expiracao) {
           bloquearAcesso();
         } else {
@@ -117,8 +104,8 @@
 
     function bloquearAcesso() {
       document.body.innerHTML = `
-        <div class="h-screen w-screen bg-black flex items-center justify-center">
-          <h2 class="text-white text-2xl font-sans">Acesso encerrado.</h2
+        <div class="bg-black text-white flex items-center justify-center h-screen">
+          <h2 class="text-2xl font-sans text-center">Acesso encerrado.</h2>
         </div>
       `;
     }
