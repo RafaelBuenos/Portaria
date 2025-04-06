@@ -70,7 +70,7 @@
       try {
         const response = await fetch(`/api/getPhone?houseNumber=${numeroFormatado}`);
         const data = await response.json();
-        const url = `https://wa.me/${data.phone}?text=Entrega%20para%20a%20casa%20${numeroFormatado}`;
+        const url = `https://wa.me/${data.phone}?text=Entrega%20na%20portaria%20para%20a%20casa%20${numeroFormatado}`;
 
         registrarAcesso(); // marca o tempo
         bloquearAcesso();  // mostra tela de encerrado
