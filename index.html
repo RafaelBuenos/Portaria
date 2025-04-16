@@ -4,7 +4,15 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Residencial Jardim Nazaré</title>
-  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.tailwindcss.com">
+function acessarWhatsapp(telefone, texto) {
+  registrarAcesso();
+  bloquearAcesso();
+  setTimeout(() => {
+    window.location.href = `https://wa.me/${telefone}?text=${texto}`;
+  }, 1000);
+}
+</script>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center bg-cover bg-center text-white px-4" style="background-image: url('https://tse4.mm.bing.net/th?id=OIP.8F0XjoldD4FVe3MXV2fB5gHaEo&pid=Api');">
 
@@ -83,7 +91,7 @@
           let html = '<div class="h-screen w-screen bg-black flex flex-col items-center justify-center text-white space-y-4">';
           html += `<h2 class="text-xl">Selecione um número:</h2>`;
           telefones.forEach((tel, index) => {
-            html += `<a href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" class="bg-green-600 hover:bg-green-800 px-4 py-2 rounded-md">Telefone ${index + 1}</a>`;
+            html += `<button onclick="acessarWhatsapp('${tel}', '${encodeURIComponent(texto)}')" class="bg-green-600 hover:bg-green-800 px-4 py-2 rounded-md">Telefone ${index + 1}</button>`;
           });
           html += '</div>';
           document.body.innerHTML = html;
@@ -118,6 +126,14 @@
         </div>
       `;
     }
-  </script>
+  
+function acessarWhatsapp(telefone, texto) {
+  registrarAcesso();
+  bloquearAcesso();
+  setTimeout(() => {
+    window.location.href = `https://wa.me/${telefone}?text=${texto}`;
+  }, 1000);
+}
+</script>
 </body>
 </html>
