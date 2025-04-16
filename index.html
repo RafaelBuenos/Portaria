@@ -73,34 +73,28 @@
         const texto = `Entrega na portaria para a casa ${numeroFormatado}`;
         const telefones = Array.isArray(data.phones) ? data.phones : [data.phones];
 
-      if (telefones.length === 1) {
-          const url = `https://wa.me/${telefones[0]}?text=${encodeURIComponent(texto)}`;
-          window.location.href = url;
-      } else {
-        let html = '<div class="h-screen w-screen bg-black flex flex-col items-center justify-center text-white space-y-4">';
-        html += `<h2 class="text-xl">Selecione um número:</h2>`;
-        telefones.forEach(tel => {
-        html += `<a href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" class="bg-green-600 hover:bg-green-800 px-4 py-2 rounded-md">${tel}</a>`;
-      });
-        html += '</div>';
-        document.body.innerHTML = html;
-      }
-
         registrarAcesso(); // marca o tempo
         bloquearAcesso();  // mostra tela de encerrado
 
-        setTimeout(() => {
+        if (telefones.length === 1) {
+          const url = `https://wa.me/${telefones[0]}?text=${encodeURIComponent(texto)}`;
           window.location.href = url;
-        }, 1000);
+        } else {
+          let html = '<div class="h-screen w-screen bg-black flex flex-col items-center justify-center text-white space-y-4">';
+          html += `<h2 class="text-xl">Selecione um número:</h2>`;
+          telefones.forEach(tel => {
+            html += `<a href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" class="bg-green-600 hover:bg-green-800 px-4 py-2 rounded-md">${tel}</a>`;
+          });
+          html += '</div>';
+          document.body.innerHTML = html;
+        }
       } catch (error) {
         alert("Número não encontrado.");
       }
     }
-
     function registrarAcesso() {
       localStorage.setItem("acessoEncerrado", new Date().toISOString());
     }
-
     function verificarAcesso() {
       const dataUltimoAcesso = localStorage.getItem("acessoEncerrado");
       if (dataUltimoAcesso) {
@@ -115,7 +109,6 @@
         }
       }
     }
-    
     function bloquearAcesso() {
       document.body.innerHTML = `
         <div class="h-screen w-screen bg-black flex items-center justify-center">
