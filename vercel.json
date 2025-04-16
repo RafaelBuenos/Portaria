@@ -1,13 +1,5 @@
 {
-  "version": 2,
-  "routes": [
-    {
-      "src": "/api/getPhone",
-      "dest": "/api/getPhone.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+  "rewrites": [
+    { "source": "/api/getPhone", "destination": "/api/getPhone.js" }
   ]
 }
