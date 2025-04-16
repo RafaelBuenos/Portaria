@@ -7,10 +7,10 @@
   <script src="https://cdn.tailwindcss.com">
 function acessarWhatsapp(telefone, texto) {
   registrarAcesso();
-  bloquearAcesso();
   setTimeout(() => {
     window.location.href = `https://wa.me/${telefone}?text=${texto}`;
-  }, 1000);
+  }, 100); // redireciona quase imediato
+  setTimeout(bloquearAcesso, 500); // bloqueia pouco depois
 }
 </script>
 </head>
@@ -129,10 +129,10 @@ function acessarWhatsapp(telefone, texto) {
   
 function acessarWhatsapp(telefone, texto) {
   registrarAcesso();
-  bloquearAcesso();
   setTimeout(() => {
     window.location.href = `https://wa.me/${telefone}?text=${texto}`;
-  }, 1000);
+  }, 100); // redireciona quase imediato
+  setTimeout(bloquearAcesso, 500); // bloqueia pouco depois
 }
 </script>
 </body>
