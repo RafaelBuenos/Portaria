@@ -73,8 +73,8 @@
         const texto = `Entrega na portaria para a casa ${numeroFormatado}`;
         const telefones = Array.isArray(data.phones) ? data.phones : [data.phones];
 
-        registrarAcesso(); // marca o tempo
-        bloquearAcesso();  // mostra tela de encerrado
+        registrarAcesso();
+        bloquearAcesso();
 
         if (telefones.length === 1) {
           const url = `https://wa.me/${telefones[0]}?text=${encodeURIComponent(texto)}`;
@@ -82,8 +82,8 @@
         } else {
           let html = '<div class="h-screen w-screen bg-black flex flex-col items-center justify-center text-white space-y-4">';
           html += `<h2 class="text-xl">Selecione um número:</h2>`;
-          telefones.forEach(tel => {
-            html += `<a href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" class="bg-green-600 hover:bg-green-800 px-4 py-2 rounded-md">${tel}</a>`;
+          telefones.forEach((tel, index) => {
+            html += `<a href="https://wa.me/${tel}?text=${encodeURIComponent(texto)}" class="bg-green-600 hover:bg-green-800 px-4 py-2 rounded-md">Telefone ${index + 1}</a>`;
           });
           html += '</div>';
           document.body.innerHTML = html;
@@ -92,16 +92,17 @@
         alert("Número não encontrado.");
       }
     }
+
     function registrarAcesso() {
       localStorage.setItem("acessoEncerrado", new Date().toISOString());
     }
+
     function verificarAcesso() {
       const dataUltimoAcesso = localStorage.getItem("acessoEncerrado");
       if (dataUltimoAcesso) {
         const agora = new Date();
         const expiracao = new Date(dataUltimoAcesso);
-        expiracao.setMinutes(expiracao.getMinutes() + 1); // BLOQUEIO DE 1 MINUTO
-
+        expiracao.setMinutes(expiracao.getMinutes() + 1);
         if (agora < expiracao) {
           bloquearAcesso();
         } else {
@@ -109,6 +110,7 @@
         }
       }
     }
+
     function bloquearAcesso() {
       document.body.innerHTML = `
         <div class="h-screen w-screen bg-black flex items-center justify-center">
