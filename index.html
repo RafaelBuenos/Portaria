@@ -71,12 +71,17 @@ function acessarWhatsapp(telefone, texto) {
       }
       buscarTelefone(numeroDigitado);
     }
-
+    
     async function buscarTelefone(numero) {
       const numeroFormatado = numero.toString().padStart(2, "0");
 
       try {
         const response = await fetch(`/api/getPhone?houseNumber=${numeroFormatado}`);
+
+        if (!response.ok) {
+          throw new Error("Número não encontrado.");
+        }
+
         const data = await response.json();
         const texto = `Entrega na portaria para a casa ${numeroFormatado}`;
         const telefones = Array.isArray(data.phones) ? data.phones : [data.phones];
@@ -91,16 +96,17 @@ function acessarWhatsapp(telefone, texto) {
           let html = '<div class="h-screen w-screen bg-black flex flex-col items-center justify-center text-white space-y-4">';
           html += `<h2 class="text-xl">Selecione um número:</h2>`;
           telefones.forEach((tel, index) => {
-            html += `<button onclick="acessarWhatsapp('${tel}', '${encodeURIComponent(texto)}')" class="bg-green-600 hover:bg-green-800 px-4 py-2 rounded-md">Telefone ${index + 1}</button>`;
-          });
-          html += '</div>';
-          document.body.innerHTML = html;
+          html += `<button onclick="acessarWhatsapp('${tel}', '${encodeURIComponent(texto)}')" class="bg-green-600 hover:bg-green-800 px-4 py-2 rounded-md">Telefone ${index + 1}</button>`;
+        });
+        html += '</div>';
+        document.body.innerHTML = html;
         }
+
       } catch (error) {
         alert("Número não encontrado.");
       }
     }
-
+    
     function registrarAcesso() {
       localStorage.setItem("acessoEncerrado", new Date().toISOString());
     }
